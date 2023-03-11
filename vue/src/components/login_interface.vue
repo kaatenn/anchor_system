@@ -6,6 +6,14 @@
     </div>
     <div class="loginMain">
       <el-form ref="form" :model="form" :rules="rules">
+        <el-form-item prop="type">
+          <div>
+            <el-radio-group v-model="form.type">
+              <el-radio label="chairman" size="large" border>公会</el-radio>
+              <el-radio label="anchor" size="large" border>主播</el-radio>
+            </el-radio-group>
+          </div>
+        </el-form-item>
         <el-form-item prop="account">
           <el-input
               v-model="form.account"
@@ -39,6 +47,7 @@ export default {
   data() {
     return {
       form: {
+        type: "",
         account: "",
         password: ""
       },
@@ -59,11 +68,17 @@ export default {
 
 <style scoped>
 .loginContainer {
-  height: 100%;
-  width: 100%;
+  margin-left: 25%;
+  margin-right: 25%;
+  margin-top: 5%;
+  height: 50%;
+  width: 50%;
   text-align: center;
   line-height: 100%;
-  padding-top: 150px;
+  padding-top: 100px;
+  padding-bottom: 100px;
+  border: #CDD0D6 1px solid;
+  border-radius: 8px;
 }
 
 .loginHeader {
