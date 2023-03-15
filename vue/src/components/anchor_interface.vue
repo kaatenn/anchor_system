@@ -23,8 +23,9 @@
 
       <!---------main----------->
       <el-container>
-        <el-main>Main</el-main>
-        <el-footer height="100px">Footer</el-footer>
+        <el-main>
+
+        </el-main>
       </el-container>
     </el-container>
   </el-container>
@@ -37,7 +38,7 @@ export default {
   name: "anchor_interface",
   data() {
     return {
-
+      associations: []
     }
   },
 
