@@ -2,7 +2,8 @@ import django.middleware.csrf
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError
 from django.shortcuts import render
 
-from src.models import AnchorAcPass, ChairmanAcPass
+from src.models import AnchorAcPass, ChairmanAcPass, AnchorInfo, ChairmanInfo
+from src.util import create_default_anchor, create_default_chairman
 
 
 # Create your views here.
@@ -36,12 +37,25 @@ def register(request):
     user_info = request.POST
     if user_info['type'] == 'anchor':
         if not AnchorAcPass.objects.filter(account=user_info['account']).exists():
-            AnchorAcPass.objects.create(account=user_info['account'], password=user_info['password'])
+            create_default_anchor(user_info)
         else:
             return HttpResponseBadRequest(400)
     else:
         if not ChairmanAcPass.objects.filter(account=user_info['account']).exists():
-            ChairmanAcPass.objects.create(account=user_info['account'], password=user_info['password'])
+            create_default_chairman(user_info)
         else:
             return HttpResponseBadRequest(400)
     return HttpResponse('success')
+
+
+def set_nick_name(request):
+    user_info = request.POST
+    if user_info['type'] == 'anchor':
+        AnchorInfo.objects.filter(account=user_info['account']).update(nickname=user_info['nickname'])
+    else:
+        ChairmanInfo.objects.filter(account=user_info['account']).update(nickname=user_info['nickname'])
+    return HttpResponse('success')
+
+
+def get_user_info(request):
+    return HttpResponseBadRequest(400)

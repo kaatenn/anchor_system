@@ -1,9 +1,9 @@
 <template>
   <div v-if="loginStatus === 0" class="loginInterface">
-    <login-interface @login = "changeLoginStatus"></login-interface>
+    <login-interface @login="changeLoginStatus"></login-interface>
   </div>
   <div v-if="loginStatus === 1" class="anchorInterface">
-    <anchor_interface></anchor_interface>
+    <anchor_interface :account="account"></anchor_interface>
   </div>
   <div v-if="loginStatus === 2" class="chairmanInterface">
     chairmanInterface
@@ -23,6 +23,14 @@ const CHAIRMAN = 2;
 export default {
   name: 'App',
   components: {LoginInterface, Anchor_interface},
+  watch: {
+    loginStatus(val) {
+      if (val !== OFF_LINE)
+        this.account = ''
+      else
+        this.account = Cookies.get('account')
+    }
+  },
   mounted() {
     if (Cookies.get('account') !== undefined) {
       this.account = Cookies.get('account')
@@ -31,8 +39,7 @@ export default {
   },
   data() {
     return {
-      // 登录状态
-      loginStatus: OFF_LINE,
+      loginStatus: OFF_LINE, // loginStatus can also mean user type
       account: ''
     }
   },

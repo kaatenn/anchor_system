@@ -8,36 +8,46 @@
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item prop="type">
           <div>
-            <el-radio-group v-model="form.type">
-              <el-radio label="anchor" size="large" border>主播</el-radio>
-              <el-radio label="chairman" size="large" border>公会</el-radio>
+            <el-radio-group v-model="form.type" :disabled="register">
+              <el-radio border label="anchor" size="large">主播</el-radio>
+              <el-radio border label="chairman" size="large">公会</el-radio>
             </el-radio-group>
           </div>
         </el-form-item>
         <el-form-item prop="account">
           <el-input
               v-model="form.account"
-              placeholder="请输入账号"
+              :disabled="register"
               clearable
               oninput="value=value.replace(/\s*/g,'')"
+              placeholder="请输入账号"
           ></el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input
               v-model="form.password"
-              placeholder="请输入密码"
+              :disabled="register"
               clearable
-              show-password
               oninput="value=value.replace(/\s*/g,'')"
+              placeholder="请输入密码"
+              show-password
+          ></el-input>
+        </el-form-item>
+        <el-form-item v-if="register" prop="nickName">
+          <el-input
+              v-model="form.nickName"
+              clearable
+              oninput="value=value.replace(/\s*/g,'')"
+              placeholder="填写个昵称吧"
           ></el-input>
         </el-form-item>
       </el-form>
       <div class="butt">
-        <el-button type="primary" @click="login"
+        <el-button :disabled="register" type="primary" @click="loginHandler"
         >登录
         </el-button
         >
-        <el-button class="shou" @click="register">快速注册</el-button>
+        <el-button class="shou" @click="registerHandler">快速注册</el-button>
       </div>
     </div>
   </div>
@@ -53,10 +63,12 @@ export default {
 
   data() {
     return {
+      register: false,
       form: {
         type: "anchor",
         account: "",
-        password: ""
+        password: "",
+        nickName: "",
       },
       rules: {
         account: [
@@ -72,7 +84,7 @@ export default {
   },
 
   methods: {
-    async login() {
+    async loginHandler() {
       let form = this.form
 
       if (form.account.length < 3 || form.account.length > 10 || form.password.length < 6 || form.password.length > 18) {
@@ -87,51 +99,71 @@ export default {
       params.append('password', form.password)
 
 
+      // used for access the csrf
       await httpGet.get('/token')
 
       await httpPost.post('/login', params)
           .then(() => {
             this.$emit('login', form.type === "anchor" ? 1 : 2)
-            Cookies.set('type', form.type, { expires: 30 })
-            Cookies.set('account', form.account, { expires: 30 })
+            Cookies.set('type', form.type, {expires: 30})
+            Cookies.set('account', form.account, {expires: 30})
           })
           .catch((err) => {
             if (err.response.status === 400) {
-              ElMessage.error('账号或密码错误')
-              this.form.account = ''
+              ElMessage.error('账号或密码错误！')
               this.form.password = ''
             }
           })
     },
 
-    async register() {
-
+    async registerHandler() {
       let form = this.form
 
-      if (form.account.length < 3 || form.account.length > 10 || form.password.length < 6 || form.password.length > 18) {
-        ElMessage.error('输入错误！')
-        return
+      if (!this.register) {
+
+        // check if the account is existing
+        if (form.account.length < 3 || form.account.length > 10 || form.password.length < 6 || form.password.length > 18) {
+          ElMessage.error('输入错误！')
+          return
+        }
+
+        let params = new URLSearchParams()
+
+        params.append('type', form.type)
+        params.append('account', form.account)
+        params.append('password', form.password)
+
+        await httpGet.get('/token')
+        await httpPost.post('/register', params)
+            .then(() => {
+              Cookies.set('type', form.type, {expires: 30})
+              Cookies.set('account', form.account, {expires: 30})
+              this.register = true
+            })
+            .catch(err => {
+              if (err.response.status === 400)
+                ElMessage.error('账号已被注册！')
+              else
+                ElMessage.error('请求错误！')
+            })
+      } else {
+        let params = new URLSearchParams()
+
+        params.append('type', form.type)
+        params.append('account', form.account)
+        params.append('nickname', form.nickName)
+
+        await httpGet.get('/token')
+
+        await httpPost.post('/setNickName', params)
+            .then(() => {
+              this.$emit('login', this.form.type === "anchor" ? 1 : 2)
+              this.register = false // prevent the login can't be used when logout
+            })
+            .catch(err => {
+              console.log(err)
+            })
       }
-
-      let params = new URLSearchParams();
-
-      params.append('type', form.type)
-      params.append('account', form.account)
-      params.append('password', form.password)
-
-      await httpGet.get('/token')
-      await httpPost.post('/register', params)
-          .then(() => {
-            this.$emit('login', this.form.type === "anchor" ? 1 : 2)
-            Cookies.set('type', form.type, { expires: 30 })
-            Cookies.set('account', form.account, { expires: 30 })
-          })
-          .catch(err => {
-            if (err.response.status === 400)
-              ElMessage.error('账号已被注册！')
-            else
-              ElMessage.error('请求错误！')
-          })
     }
   },
   emits: ['login']
