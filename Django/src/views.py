@@ -48,12 +48,14 @@ def register(request):
     return HttpResponse('success')
 
 
-def set_nick_name(request):
+def set_base_info(request):
     user_info = request.POST
     if user_info['type'] == 'anchor':
         AnchorInfo.objects.filter(account=user_info['account']).update(nickname=user_info['nickname'])
+        AnchorInfo.objects.filter(account=user_info['account']).update(sex=user_info['sex'])
     else:
         ChairmanInfo.objects.filter(account=user_info['account']).update(nickname=user_info['nickname'])
+        ChairmanInfo.objects.filter(account=user_info['account']).update(sex=user_info['sex'])
     return HttpResponse('success')
 
 

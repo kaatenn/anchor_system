@@ -22,6 +22,6 @@ urlpatterns = [
     path('token', src.views.get_csrf_token),
     path('login', src.views.login),
     path('register', src.views.register),
-    path('setNickName', src.views.set_nick_name),
+    path('setBaseInfo', src.views.set_base_info),
     path('getUserInfo', src.views.get_user_info)
 ]

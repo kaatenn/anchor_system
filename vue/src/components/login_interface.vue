@@ -33,6 +33,12 @@
               show-password
           ></el-input>
         </el-form-item>
+        <el-form-item v-if="register" prop="sex">
+          <el-radio-group v-model="form.sex">
+            <el-radio :label="0">男</el-radio>
+            <el-radio :label="1">女</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item v-if="register" prop="nickName">
           <el-input
               v-model="form.nickName"
@@ -47,7 +53,7 @@
         >登录
         </el-button
         >
-        <el-button class="shou" @click="registerHandler">快速注册</el-button>
+        <el-button @click="registerHandler">快速注册</el-button>
       </div>
     </div>
   </div>
@@ -57,6 +63,9 @@
 import {ElMessage} from "element-plus";
 import {httpGet, httpPost} from "@/plugins/axios";
 import Cookies from 'js-cookie';
+
+const MALE = 0
+const FEMALE = 1
 
 export default {
   name: "loginInterface",
@@ -68,6 +77,7 @@ export default {
         type: "anchor",
         account: "",
         password: "",
+        sex: MALE,
         nickName: "",
       },
       rules: {
@@ -151,11 +161,12 @@ export default {
 
         params.append('type', form.type)
         params.append('account', form.account)
+        params.append('sex', form.sex.toString())
         params.append('nickname', form.nickName)
 
         await httpGet.get('/token')
 
-        await httpPost.post('/setNickName', params)
+        await httpPost.post('/setBaseInfo', params)
             .then(() => {
               this.$emit('login', this.form.type === "anchor" ? 1 : 2)
               this.register = false // prevent the login can't be used when logout

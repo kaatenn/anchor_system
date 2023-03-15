@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
     "element-plus": "^2.2.36",
     "js-cookie": "^3.0.1",
     "js-cookies": "^1.0.4",

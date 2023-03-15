@@ -19,6 +19,8 @@ class AnchorAcPass(models.Model):
 class AnchorInfo(models.Model):
     account = models.OneToOneField(AnchorAcPass, models.DO_NOTHING, db_column='account', primary_key=True)
     nickname = models.CharField(db_column='nickName', max_length=10)  # Field name made lowercase.
+    sex = models.IntegerField()
+    telephone_number = models.CharField(max_length=11, blank=True, null=True)
     introduction = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -37,6 +39,8 @@ class ChairmanInfo(models.Model):
     nickname = models.CharField(db_column='nickName', max_length=10)  # Field name made lowercase.
     account = models.OneToOneField(ChairmanAcPass, models.DO_NOTHING, db_column='account', primary_key=True)
     introduction = models.CharField(max_length=255, blank=True, null=True)
+    sex = models.IntegerField()
+    telephone_number = models.CharField(max_length=11, blank=True, null=True)
 
     class Meta:
         db_table = 'chairman_info'
