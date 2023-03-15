@@ -376,6 +376,16 @@ is-core-module@^2.9.0:
   dependencies:
     has "^1.0.3"
 
+js-cookie@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.npmmirror.com/js-cookie/-/js-cookie-3.0.1.tgz#9e39b4c6c2f56563708d7d31f6f5f21873a92414"
+  integrity sha512-+0rgsUXZu4ncpPxRL+lNEptWMOWl9etvPHc/koSRp6MPwpRYAhmk0dUG00J4bxVV3r9uUzfo24wW0knS07SKSw==
+
+js-cookies@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmmirror.com/js-cookies/-/js-cookies-1.0.4.tgz#d46e576c420ff6d5542c0f52b6d4ef7d637e754e"
+  integrity sha512-cO1SHDH7zJsi8FihHmDtcWx90mWmrfGOrcLKPeaEX6tLyuTK2wnzgdmNa34Q6rNAd6VhQUgjDt5Eyl90VI/Fpg==
+
 lodash-es@^4.17.21:
   version "4.17.21"
   resolved "https://registry.npmmirror.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
@@ -479,6 +489,11 @@ vite@^4.1.4:
     rollup "^3.10.0"
   optionalDependencies:
     fsevents "~2.3.2"
+
+vue-cookies@^1.8.3:
+  version "1.8.3"
+  resolved "https://registry.npmmirror.com/vue-cookies/-/vue-cookies-1.8.3.tgz#0c7ce26d150f7ac50356ae17cb4ead1122013b82"
+  integrity sha512-VBRsyRMVdahBgFfh389TMHPmDdr4URDJNMk4FKSCfuNITs7+jitBDhwyL4RJd3WUsfOYNNjPAkfbehyH9AFuoA==
 
 vue-demi@*:
   version "0.13.11"

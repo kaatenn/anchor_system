@@ -9,7 +9,10 @@
   },
   "dependencies": {
     "element-plus": "^2.2.36",
-    "vue": "^3.2.47"
+    "js-cookie": "^3.0.1",
+    "js-cookies": "^1.0.4",
+    "vue": "^3.2.47",
+    "vue-cookies": "^1.8.3"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

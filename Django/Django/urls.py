@@ -1,4 +1,4 @@
-"""src URL Configuration
+"""Django URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.1/topics/http/urls/
@@ -16,6 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+import src.views
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('token', src.views.get_csrf_token),
+    path('login', src.views.login),
+    path('register', src.views.register)
 ]
