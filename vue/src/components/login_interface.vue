@@ -103,6 +103,7 @@ export default {
             }
           })
     },
+
     async register() {
 
       let form = this.form

@@ -6,7 +6,7 @@
     <anchor_interface></anchor_interface>
   </div>
   <div v-if="loginStatus === 2" class="chairmanInterface">
-
+    chairmanInterface
   </div>
 </template>
 
