@@ -1,19 +1,13 @@
 <template>
-  <div v-if="loginStatus === 0" class="loginInterface">
-    <login-interface @login="changeLoginStatus"></login-interface>
-  </div>
-  <div v-if="loginStatus === 1" class="anchorInterface">
-    <anchor_interface :account="account"></anchor_interface>
-  </div>
-  <div v-if="loginStatus === 2" class="chairmanInterface">
-    chairmanInterface
-  </div>
+  <div id="app"><router-view></router-view></div>
 </template>
 
 <script>
 import Anchor_interface from "@/components/anchor_interface.vue";
 import LoginInterface from "@/components/login_interface.vue";
 import Cookies from 'js-cookie'
+import Chairman_interface from "@/components/chairman_interface.vue";
+import {router} from "@/plugins/router";
 
 // define login status and identify
 const OFF_LINE = 0;
@@ -22,10 +16,10 @@ const CHAIRMAN = 2;
 
 export default {
   name: 'App',
-  components: {LoginInterface, Anchor_interface},
+  components: {Chairman_interface, LoginInterface, Anchor_interface},
   watch: {
     loginStatus(val) {
-      if (val !== OFF_LINE)
+      if (val === OFF_LINE)
         this.account = ''
       else
         this.account = Cookies.get('account')
@@ -35,6 +29,10 @@ export default {
     if (Cookies.get('account') !== undefined) {
       this.account = Cookies.get('account')
       this.loginStatus = Cookies.get('type') === 'anchor' ? ANCHOR : CHAIRMAN
+      router.push('/interface/' + Cookies.get('type'))
+    }
+    else {
+      router.push('/interface/login')
     }
   },
   data() {

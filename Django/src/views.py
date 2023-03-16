@@ -1,5 +1,8 @@
+import json
+from typing import Dict, Union
+
 import django.middleware.csrf
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError, JsonResponse
 from django.shortcuts import render
 
 from src.models import AnchorAcPass, ChairmanAcPass, AnchorInfo, ChairmanInfo
@@ -60,4 +63,22 @@ def set_base_info(request):
 
 
 def get_user_info(request):
-    return HttpResponseBadRequest(400)
+    account = request.GET['account']
+    src_type = request.GET['type']
+    if src_type == 'anchor':
+        info = AnchorInfo.objects.get(account=account)
+        json.dumps(info)
+        object_info = {
+            'account': info.account,
+        }
+        return JsonResponse(object_info)
+    else:
+        info = ChairmanInfo.objects.get(account=account)
+        sex = '男' if info.sex == 0 else '女'
+        result = {
+            'sex': sex,
+            'nickName': info.nickname,
+            'telephoneNumber': info.telephone_number,
+            'introduction': info.introduction
+        }
+        return JsonResponse(result)

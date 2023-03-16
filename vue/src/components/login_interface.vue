@@ -63,6 +63,7 @@
 import {ElMessage} from "element-plus";
 import {httpGet, httpPost} from "@/plugins/axios";
 import Cookies from 'js-cookie';
+import {router} from "@/plugins/router";
 
 const MALE = 0
 const FEMALE = 1
@@ -117,6 +118,8 @@ export default {
             this.$emit('login', form.type === "anchor" ? 1 : 2)
             Cookies.set('type', form.type, {expires: 30})
             Cookies.set('account', form.account, {expires: 30})
+            router.push('/interface/' + this.form.type)
+            console.log(router)
           })
           .catch((err) => {
             if (err.response.status === 400) {
@@ -170,6 +173,7 @@ export default {
             .then(() => {
               this.$emit('login', this.form.type === "anchor" ? 1 : 2)
               this.register = false // prevent the login can't be used when logout
+              router.push('/interface/' + this.form.type)
             })
             .catch(err => {
               console.log(err)
