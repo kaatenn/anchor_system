@@ -115,16 +115,18 @@ export default {
 
       await httpPost.post('/login', params)
           .then(() => {
-            this.$emit('login', form.type === "anchor" ? 1 : 2)
             Cookies.set('type', form.type, {expires: 30})
             Cookies.set('account', form.account, {expires: 30})
-            router.push('/interface/' + this.form.type)
-            console.log(router)
+            let url = form.type + '_interface'
+            router.push({name: url, params: {account: form.account}})
           })
           .catch((err) => {
+            console.log(err)
             if (err.response.status === 400) {
               ElMessage.error('账号或密码错误！')
               this.form.password = ''
+            } else {
+              ElMessage.error('请求错误！')
             }
           })
     },
@@ -167,13 +169,19 @@ export default {
         params.append('sex', form.sex.toString())
         params.append('nickname', form.nickName)
 
+        if (form.nickName.length > 10) {
+          ElMessage.error('昵称长度应小于 10')
+          return
+        }
+
         await httpGet.get('/token')
 
         await httpPost.post('/setBaseInfo', params)
             .then(() => {
               this.$emit('login', this.form.type === "anchor" ? 1 : 2)
               this.register = false // prevent the login can't be used when logout
-              router.push('/interface/' + this.form.type)
+              let url = form.type + '_interface'
+              router.push({name: url, params: {account: form.account}})
             })
             .catch(err => {
               console.log(err)

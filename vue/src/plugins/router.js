@@ -6,13 +6,13 @@ const chairman_interface = () => import ("@/components/chairman_interface.vue");
 
 const routes = [
     {path: '/', redirect: '/interface/login'},
-    {path: '/interface/login', component: login_interface},
-    {path: '/interface/anchor', component: anchor_interface},
-    {path: '/interface/chairman', component: chairman_interface}
+    {path: '/interface/login', component: login_interface, name: 'login_interface'},
+    {path: '/interface/anchor/:account', component: anchor_interface, name: 'anchor_interface'},
+    {path: '/interface/chairman/:account', component: chairman_interface, name: 'chairman_interface'},
 ]
 
 export const router = VueRouter.createRouter({
-    history : VueRouter.createWebHashHistory(),
+    history: VueRouter.createWebHashHistory(),
     routes
 })
 

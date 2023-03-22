@@ -23,5 +23,7 @@ urlpatterns = [
     path('login', src.views.login),
     path('register', src.views.register),
     path('setBaseInfo', src.views.set_base_info),
-    path('getUserInfo', src.views.get_user_info)
+    path('getUserInfo', src.views.get_user_info),
+    path('updateInfo', src.views.update_user_info),
+    path('getEmployedAnchor', src.views.get_employed_anchor)
 ]

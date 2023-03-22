@@ -29,7 +29,8 @@ export default {
     if (Cookies.get('account') !== undefined) {
       this.account = Cookies.get('account')
       this.loginStatus = Cookies.get('type') === 'anchor' ? ANCHOR : CHAIRMAN
-      router.push('/interface/' + Cookies.get('type'))
+      let url_name = (Cookies.get('type') === 'anchor' ? 'anchor_' : 'chairman_') + 'interface'
+      router.push({name: url_name, params: {account: Cookies.get('account')}})
     }
     else {
       router.push('/interface/login')

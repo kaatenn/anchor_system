@@ -19,3 +19,13 @@ def create_default_chairman(user_info):
                                 sex=0,
                                 telephone_number=None)
     return
+
+
+def employed_to_dict(anchor_data, anchor_info):
+    result = {
+        'anchor_account': anchor_data.anchor,
+        'anchor_nickname': anchor_info.nickname,
+        'working_status': anchor_data.workingstatus,
+        'working_time_percent': anchor_data.worktime / anchor_data.goaltime
+    }
+    return result
