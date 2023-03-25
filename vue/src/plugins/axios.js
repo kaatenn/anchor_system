@@ -13,6 +13,12 @@ const httpPost = axios.create({
     }
 )
 
+const httpDelete = axios.create({
+        baseURL: '/api/',
+        timeout: 3000
+    }
+)
+
 httpPost.interceptors.request.use(config => {
     config.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
     config.headers['X-Requested-With'] = 'XMLHttpRequest'
@@ -29,4 +35,18 @@ httpPost.interceptors.response.use(
     }
 )
 
-export {httpGet, httpPost}
+httpDelete.interceptors.request.use(config => {
+    config.headers['X-CSRFToken'] = Cookies.get('csrftoken')
+    return config
+})
+
+httpPost.interceptors.response.use(
+    response => {
+        return response
+    },
+    error => {
+        return Promise.reject(error)
+    }
+)
+
+export {httpGet, httpPost, httpDelete}

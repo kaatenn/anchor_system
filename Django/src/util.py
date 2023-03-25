@@ -22,10 +22,11 @@ def create_default_chairman(user_info):
 
 
 def employed_to_dict(anchor_data, anchor_info):
+    percentage = anchor_data.worktime / anchor_data.goaltime * 100
     result = {
-        'anchor_account': anchor_data.anchor,
+        'anchor_account': anchor_data.anchor_id,
         'anchor_nickname': anchor_info.nickname,
-        'working_status': anchor_data.workingstatus,
-        'working_time_percent': anchor_data.worktime / anchor_data.goaltime
+        'working_status': False if anchor_data.workingstatus == 0 else True,
+        'working_time_percent': "%.2f" % percentage if percentage < 100 else 100
     }
     return result

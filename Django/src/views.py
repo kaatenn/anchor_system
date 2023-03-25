@@ -1,9 +1,7 @@
 import json
-from typing import Dict, Union
 
 import django.middleware.csrf
-from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError, JsonResponse
-from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError, JsonResponse, QueryDict
 
 from src.models import AnchorAcPass, ChairmanAcPass, AnchorInfo, ChairmanInfo, Employment
 from src.util import create_default_anchor, create_default_chairman, employed_to_dict
@@ -96,7 +94,6 @@ def get_user_info(request):
 
 def update_user_info(request):
     if request.method == 'POST':
-        # TODO Find the Relation in the database and update it.
         user_info = request.POST
         if user_info['type'] == 'anchor':
             orm = AnchorInfo.objects.filter(account=user_info['account'])
@@ -126,16 +123,25 @@ def update_user_info(request):
 
 def get_employed_anchor(request):
     if request.method == 'POST':
-        # the function need to return all employee and the length of employed by POST conference
-        employed_length = 0
-        employee_list = []
+        # the function need to return all employee who was employed by the conference of the account
+        result_list = []
         post_info = request.POST
         conference_account = post_info['account']
         employed_list = Employment.objects.filter(administer=conference_account)
         for employed_data in employed_list:
             anchor_info = AnchorInfo.objects.get(account=employed_data.anchor)
-            employee_list.append(employed_to_dict(employed_data, anchor_info))
-        json_result = json.dumps(employee_list)
+            result_list.append(employed_to_dict(employed_data, anchor_info))
+        json_result = json.dumps(result_list)
         return HttpResponse(json_result)
+    else:
+        return HttpResponseServerError(500)
+
+
+def dismiss(request):
+    if request.method == 'DELETE':
+        delete = QueryDict(request.body)
+        relation = Employment.objects.filter(anchor=delete['anchor_account'], administer=delete['conference_account'])
+        relation.delete()
+        return HttpResponse('success')
     else:
         return HttpResponseServerError(500)

@@ -18,26 +18,69 @@
             <el-icon>
               <Grid/>
             </el-icon> <!--Grid has defined in element-plus-->
-            <p>签约主播</p>
+            <p>管理主播</p>
           </el-menu-item>
           <el-menu-item index="2">
+            <el-icon><Service /></el-icon>
+            <p>签约主播</p>
+          </el-menu-item>
+          <el-menu-item index="3">
+            <el-icon><Bell /></el-icon>
+            <p>签约请求</p>
+          </el-menu-item>
+          <el-menu-item index="4">
             <el-icon>
               <UserFilled/>
             </el-icon> <!--UserFilled has defined in element-plus-->
-            <p>账户信息</p>
+            <p>账户设置</p>
           </el-menu-item>
         </el-menu>
       </el-aside>
 
       <!---------main----------->
-      <el-container>
+      <el-container v-loading="loading">
         <el-main>
           <!------------page1--------------->
           <div v-if="page === '1'">
-
+            <el-table :data="employed_info" stripe style="width: 100%">
+              <el-table-column label="账号" width="160">
+                <template #default="scope">
+                  <p> {{ scope.row.anchor_account }} </p>
+                </template>
+              </el-table-column>
+              <el-table-column label="昵称" width="160">
+                <template #default="scope">
+                  <p> {{ scope.row.anchor_nickname }} </p>
+                </template>
+              </el-table-column>
+              <el-table-column label="工作状态" width="160">
+                <template #default="scope">
+                  <p style="color: #b3e19d" v-if="scope.row.working_status">直播中</p>
+                  <p style="color: #F56C6C" v-if="!scope.row.working_status">未开播</p>
+                </template>
+              </el-table-column>
+              <el-table-column label="直播进度" width="240">
+                <template #default="scope">
+                  <el-progress :percentage="parseFloat(scope.row.working_time_percent)" />
+                </template>
+              </el-table-column>
+              <el-table-column label="可执行操作" width="160">
+                <template #default="scope">
+                  <el-button type="danger" @click="handleDismiss(scope.row.anchor_account)">解雇</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
           </div>
           <!------------page2--------------->
           <div v-if="page === '2'">
+
+          </div>
+          <!------------page3--------------->
+          <div v-if="page === '3'">
+
+          </div>
+          <!------------page3--------------->
+          <div v-if="page === '4'">
             <span style="font-size: xx-large; margin-bottom: 20px; color: #909399">{{ account }}</span>
             <el-table :data="user_info" style="width: 100%">
               <el-table-column label="设置项" width="180" prop="name"></el-table-column>
@@ -74,7 +117,7 @@
 </template>
 
 <script>
-import {httpGet, httpPost} from "@/plugins/axios";
+import {httpDelete, httpGet, httpPost} from "@/plugins/axios";
 import {attr_name, attr_name_cn} from "@/plugins/utils";
 import {ElMessage} from "element-plus";
 import {router} from "@/plugins/router";
@@ -85,8 +128,17 @@ export default {
 
   data() {
     return {
+      loading: true,
       page: '1',
       account: '',
+      employed_info: [
+        {
+          anchor_account: '',
+          anchor_nickname: '',
+          working_status: '',
+          working_time_percent: '0'
+        }
+      ],
       is_edit: [false, false, false, false],
       user_info: [
         {name: '昵称', attributes: ''},
@@ -106,6 +158,7 @@ export default {
   },
 
   mounted() {
+    this.loading = true
     if (this.account === '') {
       if (Cookies.get('account') === '') {
         router.push('/interface/login')
@@ -114,25 +167,18 @@ export default {
       }
     }
     this.getUserInfo()
+    this.getEmployedAnchor()
+    this.loading = false
   },
 
   methods: {
     selectHandler(index) {
       this.page = index
     },
-    getUserInfo() {
-      httpGet.get('/getUserInfo?type=chairman&account=' + this.account)
-          .then(res => {
-            this.user_info = res.data
-          })
-          .catch(err => {
-            console.log(err)
-          })
-    },
     handleEdit(index) {
       this.is_edit[index] = true
     },
-    handleSave(index) {
+    async handleSave(index) {
       let params = new URLSearchParams()
 
       /* check if the info input is legal*/
@@ -176,13 +222,14 @@ export default {
         }
       }
 
-      httpGet.get('/token')
+      await httpGet.get('/token')
 
-      httpPost.post('/updateInfo', params)
-          .then(res => {
+      await httpPost.post('/updateInfo', params)
+          .then(() => {
             this.is_edit[index] = false
+            this.loading = true
             this.getUserInfo()
-            console.log(res)
+            this.loading = false
           })
           .catch(err => {
             console.log(err)
@@ -193,14 +240,45 @@ export default {
       Cookies.remove('type')
       router.push('/interface/login')
     },
-    getEmployedAnchor() {
+    async handleDismiss(anchor_account) {
       let params = new URLSearchParams()
 
-      params.append()
+      params.append('anchor_account', anchor_account)
+      params.append('conference_account', this.account)
 
-      httpGet.get('/token')
+      await httpGet.get('/token')
 
-      httpPost.post('/getEmployedAnchor', )
+      await httpDelete.delete('/dismiss', {data: params})
+          .then(res => {
+            this.loading = true
+            this.getEmployedAnchor()
+            this.loading = false
+            console.log(res)
+          })
+    },
+    async getUserInfo() {
+      await httpGet.get('/getUserInfo?type=chairman&account=' + this.account)
+          .then(res => {
+            this.user_info = res.data
+          })
+          .catch(err => {
+            console.log(err)
+          })
+    },
+    async getEmployedAnchor() {
+      let params = new URLSearchParams()
+
+      params.append('account', this.account)
+
+      await httpGet.get('/token')
+
+      await httpPost.post('/getEmployedAnchor', params)
+          .then(res => {
+            this.employed_info = res.data
+          })
+          .catch(err => {
+            console.log(err)
+          })
     }
   }
 }
