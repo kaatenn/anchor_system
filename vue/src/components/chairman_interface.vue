@@ -25,10 +25,6 @@
             <p>签约主播</p>
           </el-menu-item>
           <el-menu-item index="3">
-            <el-icon><Bell /></el-icon>
-            <p>签约请求</p>
-          </el-menu-item>
-          <el-menu-item index="4">
             <el-icon>
               <UserFilled/>
             </el-icon> <!--UserFilled has defined in element-plus-->
@@ -77,10 +73,6 @@
           </div>
           <!------------page3--------------->
           <div v-if="page === '3'">
-
-          </div>
-          <!------------page3--------------->
-          <div v-if="page === '4'">
             <span style="font-size: xx-large; margin-bottom: 20px; color: #909399">{{ account }}</span>
             <el-table :data="user_info" style="width: 100%">
               <el-table-column label="设置项" width="180" prop="name"></el-table-column>

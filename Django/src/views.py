@@ -145,3 +145,7 @@ def dismiss(request):
         return HttpResponse('success')
     else:
         return HttpResponseServerError(500)
+
+
+def get_random_employee(request):
+    if request.method == "GET"
