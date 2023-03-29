@@ -38,9 +38,10 @@ class ChairmanAcPass(models.Model):
 class ChairmanInfo(models.Model):
     nickname = models.CharField(db_column='nickName', max_length=10)  # Field name made lowercase.
     account = models.OneToOneField(ChairmanAcPass, models.DO_NOTHING, db_column='account', primary_key=True)
-    introduction = models.CharField(max_length=255, blank=True, null=True)
     sex = models.IntegerField()
     telephone_number = models.CharField(max_length=11, blank=True, null=True)
+    introduction = models.CharField(max_length=255, blank=True, null=True)
+    is_waiting = models.IntegerField()
 
     class Meta:
         db_table = 'chairman_info'
@@ -50,9 +51,24 @@ class Employment(models.Model):
     administer = models.OneToOneField(ChairmanAcPass, models.DO_NOTHING, db_column='administer', primary_key=True)
     anchor = models.ForeignKey(AnchorAcPass, models.DO_NOTHING, db_column='anchor')
     goaltime = models.IntegerField()
+    salary = models.IntegerField()
     workingstatus = models.IntegerField()
     worktime = models.IntegerField()
+    start_time = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         db_table = 'employment'
         unique_together = (('administer', 'anchor'),)
+
+
+class Wanting(models.Model):
+    anchor = models.OneToOneField(AnchorAcPass, models.DO_NOTHING, db_column='anchor', primary_key=True)
+    administer = models.ForeignKey(ChairmanAcPass, models.DO_NOTHING, db_column='administer')
+    wanted_salary = models.IntegerField()
+    wanted_salary_fluctuation = models.IntegerField(blank=True, null=True)
+    wanted_goal_time = models.IntegerField()
+    wanted_goal_time_fluctuation = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'wanting'
+        unique_together = (('anchor', 'administer'),)

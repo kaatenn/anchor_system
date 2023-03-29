@@ -26,5 +26,13 @@ urlpatterns = [
     path('getUserInfo', src.views.get_user_info),
     path('updateInfo', src.views.update_user_info),
     path('getEmployedAnchor', src.views.get_employed_anchor),
-    path('dismiss', src.views.dismiss)
+    path('dismiss', src.views.dismiss),
+    path('getEmployer', src.views.get_employer),
+    path('living', src.views.living),
+    path('endLiving', src.views.end_living),
+    path('getRandomChairman', src.views.get_random_conference),
+    path('wanting', src.views.wanting),
+    path('getWaitingEmployee', src.views.get_waiting_employee),
+    path('addEmployment', src.views.add_employment),
+    path('refuseWanting', src.views.refuse_wanting)
 ]

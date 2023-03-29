@@ -21,7 +21,9 @@
             <p>管理主播</p>
           </el-menu-item>
           <el-menu-item index="2">
-            <el-icon><Service /></el-icon>
+            <el-icon>
+              <Service/>
+            </el-icon>
             <p>签约主播</p>
           </el-menu-item>
           <el-menu-item index="3">
@@ -49,6 +51,11 @@
                   <p> {{ scope.row.anchor_nickname }} </p>
                 </template>
               </el-table-column>
+              <el-table-column label="工资" width="160">
+                <template #default="scope">
+                  <p> {{ parseInt(scope.row.salary) }} </p>
+                </template>
+              </el-table-column>
               <el-table-column label="工作状态" width="160">
                 <template #default="scope">
                   <p style="color: #b3e19d" v-if="scope.row.working_status">直播中</p>
@@ -57,7 +64,7 @@
               </el-table-column>
               <el-table-column label="直播进度" width="240">
                 <template #default="scope">
-                  <el-progress :percentage="parseFloat(scope.row.working_time_percent)" />
+                  <el-progress :percentage="parseFloat(scope.row.working_time_percent)"/>
                 </template>
               </el-table-column>
               <el-table-column label="可执行操作" width="160">
@@ -69,7 +76,49 @@
           </div>
           <!------------page2--------------->
           <div v-if="page === '2'">
-
+            <div v-for="(waiting_data, index) in current_waiting_employees" style="margin-bottom: 30px">
+              <el-descriptions border :column="4" style="margin-bottom: 10px">
+                <el-descriptions-item label="账号" width="200px">{{ waiting_data.account }}</el-descriptions-item>
+                <el-descriptions-item label="昵称" width="200px">{{ waiting_data.nickname }}</el-descriptions-item>
+                <el-descriptions-item label="性别" width="150px">{{ waiting_data.sex }}</el-descriptions-item>
+                <el-descriptions-item label="联系方式" width="250px">{{
+                    waiting_data.telephone_number == null || waiting_data.telephone_number === '' ? "该用户未设置联系方式！" : waiting_data.telephone_number
+                  }}
+                </el-descriptions-item>
+                <el-descriptions-item label="简介" :span="4">{{
+                    waiting_data.introduction == null || waiting_data.introduction === '' ? "该用户未设置简介！" : waiting_data.introduction
+                  }}
+                </el-descriptions-item>
+                <el-descriptions-item label="期望工资">{{ waiting_data.salary }}</el-descriptions-item>
+                <el-descriptions-item label="预期工资浮动">{{ waiting_data.salary_fluctuation }}</el-descriptions-item>
+                <el-descriptions-item label="期望工作时长">{{ waiting_data.time }}</el-descriptions-item>
+                <el-descriptions-item label="预期时长浮动">{{ waiting_data.time_fluctuation }}</el-descriptions-item>
+              </el-descriptions>
+              <div style="margin-bottom: 10px">
+                <el-row :gutter="20">
+                  <el-col :span="8">
+                    <el-input
+                        placeholder="请输入你给出的工资"
+                        oninput="value=value.replace(/[^\d.]/g,'')"
+                        v-model="employ_time_salary[index].salary"
+                    ></el-input>
+                  </el-col>
+                  <el-col :span="8">
+                    <el-input placeholder="请输入你给出的工作时长"
+                              oninput="value=value.replace(/[^\d.]/g,'')"
+                              v-model="employ_time_salary[index].time"
+                    ></el-input>
+                  </el-col>
+                </el-row>
+              </div>
+              <el-button @click="accept(index)" type="primary">招聘</el-button>
+              <el-button @click="refuse(index)" type="danger">拒绝</el-button>
+            </div>
+            <el-pagination
+                layout="prev, pager, next"
+                :total="waiting_employee.length"
+                :page-size="2"
+                @current-change="handleCurrentChange"/>
           </div>
           <!------------page3--------------->
           <div v-if="page === '3'">
@@ -79,11 +128,21 @@
               <el-table-column label="内容" width="400">
                 <template #default="scope">
                   <span v-if="!is_edit[scope.$index]">{{ scope.row.attributes }}</span>
-                  <el-input v-if="is_edit[scope.$index] && scope.$index !== 1" v-model="scope.row.attributes"
+                  <el-input
+                      v-if="is_edit[scope.$index] && scope.$index !== 1 && scope.$index !== 2 && scope.$index !== 4"
+                      v-model="scope.row.attributes"
+                      oninput="value=value.replace(/\s*/g,'')"
+                      placeholder="请输入内容"></el-input>
+                  <el-input v-if="is_edit[scope.$index] && scope.$index === 2" v-model="scope.row.attributes"
+                            oninput="value=value.replace(/[^\d.]/g,'')"
                             placeholder="请输入内容"></el-input>
                   <el-radio-group v-model="scope.row.attributes" v-if="is_edit[scope.$index] && scope.$index === 1 ">
                     <el-radio label="男">男</el-radio>
                     <el-radio label="女">女</el-radio>
+                  </el-radio-group>
+                  <el-radio-group v-model="scope.row.attributes" v-if="is_edit[scope.$index] && scope.$index === 4 ">
+                    <el-radio label="开启">开启</el-radio>
+                    <el-radio label="关闭">关闭</el-radio>
                   </el-radio-group>
                 </template>
               </el-table-column>
@@ -123,21 +182,39 @@ export default {
       loading: true,
       page: '1',
       account: '',
+      is_edit: [false, false, false, false],
+      user_info: [
+        {name: '昵称', attributes: ''},
+        {name: '管理员性别', attributes: ''},
+        {name: '电话号码', attributes: ''},
+        {name: '公会简介', attributes: ''},
+        {name: '开启招募', attributes: ''}
+      ],
       employed_info: [
         {
           anchor_account: '',
           anchor_nickname: '',
+          salary: '',
           working_status: '',
           working_time_percent: '0'
         }
       ],
-      is_edit: [false, false, false, false],
-      user_info: [
-        {name: '昵称', attributes: ''},
-        {name: '性别', attributes: ''},
-        {name: '电话号码', attributes: ''},
-        {name: '简介', attributes: ''},
-      ]
+      waiting_employee: [
+        {
+          account: '',
+          nickname: '',
+          sex: '',
+          telephone_number: '',
+          introduction: '',
+          salary: 0,
+          salary_fluctuation: 0,
+          time: 0,
+          time_fluctuation: 0
+        }
+      ],
+      current_waiting_employees: [],
+      employ_time_salary: [{salary: '', time: ''}, {salary: '', time: ''}],
+      current_page: 1
     }
   },
 
@@ -149,17 +226,18 @@ export default {
     })
   },
 
-  mounted() {
+  async mounted() {
     this.loading = true
     if (this.account === '') {
       if (Cookies.get('account') === '') {
-        router.push('/interface/login')
+        await router.push('/interface/login')
       } else {
         this.account = Cookies.get('account')
       }
     }
-    this.getUserInfo()
-    this.getEmployedAnchor()
+    await this.getUserInfo()
+    await this.getEmployedAnchor()
+    await this.getWaitingEmployee()
     this.loading = false
   },
 
@@ -204,15 +282,22 @@ export default {
       params.append('type', 'chairman')
       params.append('account', this.account)
       params.append('attr_name', attr_name[index])
-      if (index !== 1) {
+      if (index !== 1 && index !== 4) {
         params.append('attributes', this.user_info[index].attributes)
-      } else {
+      } else if (index === 1) {
         if (this.user_info[index].attributes === '男') {
           params.append('attributes', '0')
         } else {
           params.append('attributes', '1')
         }
+      } else {
+        if (this.user_info[index].attributes === '关闭') {
+          params.append('attributes', '0')
+        } else {
+          params.append('attributes', '1')
+        }
       }
+
 
       await httpGet.get('/token')
 
@@ -271,6 +356,66 @@ export default {
           .catch(err => {
             console.log(err)
           })
+    },
+    async getWaitingEmployee() {
+      await httpGet.get('getWaitingEmployee?account=' + this.account)
+          .then(res => {
+            this.waiting_employee = res.data
+            if (this.waiting_employee.length <= 2) {
+              this.current_waiting_employees = this.waiting_employee
+            } else {
+              this.current_waiting_employees.push(this.waiting_employee[0])
+              this.current_waiting_employees.push(this.waiting_employee[1])
+            }
+          })
+    },
+    handleCurrentChange(val) {
+      this.current_page = val
+      const start = (this.current_page - 1) * 2
+      const end = start + 2
+      this.current_waiting_employees = this.waiting_employee.slice(start, end)
+    },
+    async accept(index) {
+      let time = this.employ_time_salary[index].time
+      let salary = this.employ_time_salary[index].salary
+      let current_employee = this.current_waiting_employees[index]
+      if (time > current_employee.time + current_employee.time_fluctuation || time < current_employee.time - current_employee.time_fluctuation) {
+        ElMessage.error("时长超出预期！")
+        return
+      }
+      if (salary > current_employee.salary + current_employee.salary_fluctuation || salary < current_employee.salary - current_employee.salary_fluctuation) {
+        ElMessage.error("时长超出预期！")
+        return
+      }
+
+      await httpGet.get('token')
+
+      let params = new URLSearchParams()
+
+      params.append('chairman_account', this.account)
+      params.append('anchor_account', current_employee.account)
+      params.append('salary', salary)
+      params.append('time', time)
+
+      await httpPost.post('addEmployment', params)
+
+      await this.getEmployedAnchor()
+      await this.getWaitingEmployee()
+    },
+    async refuse(index) {
+      await httpGet.get('token')
+
+      let params = new URLSearchParams()
+
+      let current_employee = this.current_waiting_employees[index]
+
+      params.append('chairman_account', this.account)
+      params.append('anchor_account', current_employee.account)
+
+      await httpDelete.delete('refuseWanting', {data: params})
+
+      await this.getEmployedAnchor()
+      await this.getWaitingEmployee()
     }
   }
 }
