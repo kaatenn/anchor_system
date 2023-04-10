@@ -1,5 +1,5 @@
 import json
-from random import randint
+from random import randint, sample
 
 import django.middleware.csrf
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServerError, QueryDict
@@ -203,22 +203,13 @@ def get_random_conference(request):
         chairman_accounts = [emp.administer.account for emp in employment_records]
         waiting_conference = ChairmanInfo.objects.exclude(account__in=chairman_accounts).filter(is_waiting=1)
         last = waiting_conference.count()
-        result_list = []
         if last <= 2:
             result = waiting_conference_to_list(waiting_conference)
             json_result = json.dumps(result)
             return HttpResponse(json_result)
         else:
-            count = 0
-            indexes = [-1, -1, -1]
-            while count < 2:
-                num = randint(0, last - 1)
-                try:
-                    indexes.index(num)
-                except ValueError:
-                    indexes[count] = num
-                    result_list.append(waiting_conference[num])
-                    count += 1
+            indexes = sample(range(0, last - 1), 2)
+            result_list = [waiting_conference[indexes[i]] for i in range(0, 2)]
             result = waiting_conference_to_list(result_list)
             json_result = json.dumps(result)
             return HttpResponse(json_result)
