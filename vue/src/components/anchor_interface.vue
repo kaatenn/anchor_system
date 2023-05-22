@@ -2,7 +2,7 @@
   <el-container>
     <!--------------------------------header-------------------------------->
     <el-header style="background-color: #E6E6FA; line-height: 150px; font-size: xx-large" height="150px">
-      Anchor Certain（主播端）
+      Anchor Curtain（主播端）
     </el-header>
 
 
@@ -70,6 +70,7 @@
                   <el-button type="danger" @click="handleEndLiving(scope.row.chairman_account, scope.$index)"
                              v-if="scope.row.working_status">停播
                   </el-button>
+                  <el-button type="danger" @click="resignHandler(scope.row.chairman_account)">辞职</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -350,6 +351,19 @@ export default {
       await httpGet.get('/token')
 
       await httpPost.post('endLiving', param)
+          .then(() => {
+            this.getChairmanInfo()
+          })
+    },
+    async resignHandler(chairman_account) {
+      let params = new URLSearchParams()
+
+      params.append('account', this.account)
+      params.append('chairman_account', chairman_account)
+
+      await httpGet.get('/token')
+
+      await httpPost.post('/resign', params)
           .then(() => {
             this.getChairmanInfo()
           })

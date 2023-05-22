@@ -2,7 +2,7 @@
 <template>
   <div class="loginContainer">
     <div class="loginHeader">
-      <h2>工会管理系统</h2>
+      <h2>Anchor Curtain</h2>
     </div>
     <div class="loginMain">
       <el-form ref="form" :model="form" :rules="rules">

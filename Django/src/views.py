@@ -6,8 +6,8 @@ from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseServer
 from django.utils.datetime_safe import datetime
 
 from src.models import AnchorAcPass, ChairmanAcPass, AnchorInfo, ChairmanInfo, Employment, Wanting
-from src.util import create_default_anchor, create_default_chairman, employed_to_dict, get_result_list, \
-    conference_to_dict, waiting_conference_to_list, wanting_anchor_to_list
+from src.util import create_default_anchor, create_default_chairman, employment_to_dict, info_to_list, \
+    conference_employment_to_dict, waiting_conference_to_list, wanting_anchor_to_list
 
 
 def login(request):
@@ -75,11 +75,11 @@ def get_user_info(request):
         src_type = request.GET['type']
         if src_type == 'anchor':
             info = AnchorInfo.objects.get(account=account)
-            result = get_result_list(info)
+            result = info_to_list(info)
 
         else:
             info = ChairmanInfo.objects.get(account=account)
-            result = get_result_list(info)
+            result = info_to_list(info)
             if info.is_waiting == 1:
                 is_waiting = '开启'
             else:
@@ -132,7 +132,7 @@ def get_employed_anchor(request):
         employed_list = Employment.objects.filter(administer=conference_account)
         for employed_data in employed_list:
             anchor_info = AnchorInfo.objects.get(account=employed_data.anchor)
-            result_list.append(employed_to_dict(employed_data, anchor_info))
+            result_list.append(employment_to_dict(employed_data, anchor_info))
         json_result = json.dumps(result_list)
         return HttpResponse(json_result)
     else:
@@ -157,7 +157,7 @@ def get_employer(request):
         conference_list = Employment.objects.filter(anchor=anchor_account)
         for conference_data in conference_list:
             conference_info = ChairmanInfo.objects.get(account=conference_data.administer)
-            result_list.append(conference_to_dict(conference_data, conference_info))
+            result_list.append(conference_employment_to_dict(conference_data, conference_info))
         json_result = json.dumps(result_list)
         return HttpResponse(json_result)
     else:
@@ -273,6 +273,15 @@ def refuse_wanting(request):
         Wanting.objects.get(anchor=AnchorAcPass.objects.get(account=employment['anchor_account']),
                             administer=ChairmanAcPass.objects.get(
                                 account=employment['chairman_account'])).delete()
+        return HttpResponse('success')
+    else:
+        return HttpResponseServerError(500)
+
+
+def resign(request):
+    if request.method == 'POST':
+        post = request.POST
+        Employment.objects.get(anchor=post['account'], administer=post['chairman_account']).delete()
         return HttpResponse('success')
     else:
         return HttpResponseServerError(500)

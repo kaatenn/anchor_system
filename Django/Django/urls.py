@@ -34,5 +34,6 @@ urlpatterns = [
     path('wanting', src.views.wanting),
     path('getWaitingEmployee', src.views.get_waiting_employee),
     path('addEmployment', src.views.add_employment),
-    path('refuseWanting', src.views.refuse_wanting)
+    path('refuseWanting', src.views.refuse_wanting),
+    path('resign', src.views.resign)
 ]

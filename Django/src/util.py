@@ -48,33 +48,33 @@ def create_default_chairman(user_info):
     return
 
 
-def employed_to_dict(anchor_data, anchor_info):
+def employment_to_dict(employed_data, anchor_info):
     """
         Converts the given AnchorData and AnchorInfo objects to a dictionary format.
 
         Args:
-            anchor_data (AnchorData): An AnchorData object.
+            employed_data (AnchorData): An AnchorData object.
             anchor_info (AnchorInfo): An AnchorInfo object.
 
         Returns:
             dict: A dictionary containing the converted information.
     """
     # Calculate the percentage of worktime to goaltime
-    percentage = anchor_data.worktime / anchor_data.goaltime * 100
+    percentage = employed_data.worktime / employed_data.goaltime * 100
 
     # Create a dictionary with the converted information
     result = {
-        'anchor_account': anchor_data.anchor_id,
+        'anchor_account': employed_data.anchor_id,
         'anchor_nickname': anchor_info.nickname,
-        'salary': "%d" % anchor_data.salary,
-        'working_status': False if anchor_data.workingstatus == 0 else True,
+        'salary': "%d" % employed_data.salary,
+        'working_status': False if employed_data.workingstatus == 0 else True,
         'working_time_percent': "%.2f" % percentage if percentage < 100 else 100
     }
 
     return result
 
 
-def get_result_list(info):
+def info_to_list(info):
     """
         Creates a list of dictionaries, where each dictionary represents an attribute of the input object.
 
@@ -97,26 +97,26 @@ def get_result_list(info):
     return result
 
 
-def conference_to_dict(conference_data, conference_info):
+def conference_employment_to_dict(employed_data, conference_info):
     """
         Converts the given ConferenceData and ConferenceInfo objects to a dictionary format.
 
         Args:
-            conference_data: An AnchorData object.
+            employed_data: An AnchorData object.
             conference_info: An AnchorInfo object
 
         Returns:
             dict: A dictionary containing the converted information.
     """
     # Calculate the percentage of worktime to goaltime
-    percentage = conference_data.worktime / conference_data.goaltime * 100
+    percentage = employed_data.worktime / employed_data.goaltime * 100
 
     # Create a dictionary with the converted information
     result = {
-        'chairman_account': conference_data.administer_id,
+        'chairman_account': employed_data.administer_id,
         'chairman_nickname': conference_info.nickname,
-        'salary': "%d" % conference_data.salary,
-        'working_status': False if conference_data.workingstatus == 0 else True,
+        'salary': "%d" % employed_data.salary,
+        'working_status': False if employed_data.workingstatus == 0 else True,
         'working_time_percent': "%.2f" % percentage if percentage < 100 else 100
     }
     return result

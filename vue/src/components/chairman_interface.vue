@@ -3,7 +3,7 @@
     <!--------------------------------header-------------------------------->
     <el-header style="background-color: #E6E6FA; line-height: 150px; font-size: xx-large; color: #606266"
                height="150px">
-      Anchor Certain（公会端）
+      Anchor Curtain（公会端）
     </el-header>
 
     <el-container>
