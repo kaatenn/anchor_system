@@ -136,7 +136,8 @@ CORS_ALLOW_HEADERS = '*'
 CORS_ALLOWED_ORIGINS = [
     'https://127.0.0.1:8000',
     'https://localhost:8080',
-    'http://10.0.16.12'
+    'http://10.0.16.12',
+    'http://anchor-curtain.cc'
 ]
 
 CORS_ALLOW_METHODS = [
@@ -152,11 +153,13 @@ CORS_ALLOW_METHODS = [
 CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:8000',
     'http://localhost:8081',
-    'http://10.0.16.12'
+    'http://10.0.16.12',
+    'http://anchor-curtain.cc'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
     'http://localhost:8081',
-    'http://10.0.16.12'
+    'http://10.0.16.12',
+    'http://anchor-curtain.cc'
 ]
